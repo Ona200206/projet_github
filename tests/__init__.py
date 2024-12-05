@@ -1,5 +1,5 @@
 import pytest
-from planet_management import Planet, PlanetCatalog
+from projet_github.main import Planet, PlanetCatalog
 
 def test_planet_creation():
     planet = Planet("Terre", 5.972e24, 6371000, 149.6e6, {"Azote": 78, "Oxygène": 21, "Argon": 1})
