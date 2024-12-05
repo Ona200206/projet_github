@@ -1,5 +1,5 @@
 import pytest
-from bataille_navale import (
+from projet_github.main import (
     creer_grille,
     afficher_grille,
     placer_bateaux,
