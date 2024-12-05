@@ -1,6 +1,6 @@
 import pytest
 from io import StringIO
-from contextlib import redirect_stdout
+from unittest.mock import patch
 from projet_github.main import Product, Inventory, run_inventory_interface
 
 
@@ -152,36 +152,40 @@ def test_inventory_repr_empty():
 
 # Tests pour l'interface utilisateur
 def test_interface_add_product():
-    user_input = "1\nTest\n10.0\n5\n7\n"
-    with redirect_stdout(StringIO()) as output, pytest.raises(SystemExit):
-        with pytest.helpers.input_stream(user_input):
-            run_inventory_interface()
-    result = output.getvalue()
+    user_input = ["1", "Test", "10.0", "5", "7"]
+    with patch("builtins.input", side_effect=user_input):
+        with patch("sys.stdout", new_callable=StringIO) as output:
+            with pytest.raises(SystemExit):  # Simulation d'arrêt avec "Quitter"
+                run_inventory_interface()
+            result = output.getvalue()
     assert "Produit Test ajouté." in result
 
 
 def test_interface_remove_product():
-    user_input = "1\nTest\n10.0\n5\n2\nTest\n7\n"
-    with redirect_stdout(StringIO()) as output, pytest.raises(SystemExit):
-        with pytest.helpers.input_stream(user_input):
-            run_inventory_interface()
-    result = output.getvalue()
+    user_input = ["1", "Test", "10.0", "5", "2", "Test", "7"]
+    with patch("builtins.input", side_effect=user_input):
+        with patch("sys.stdout", new_callable=StringIO) as output:
+            with pytest.raises(SystemExit):  # Simulation d'arrêt avec "Quitter"
+                run_inventory_interface()
+            result = output.getvalue()
     assert "Produit Test supprimé." in result
 
 
 def test_interface_sell_product():
-    user_input = "1\nTest\n10.0\n5\n3\nTest\n3\n7\n"
-    with redirect_stdout(StringIO()) as output, pytest.raises(SystemExit):
-        with pytest.helpers.input_stream(user_input):
-            run_inventory_interface()
-    result = output.getvalue()
+    user_input = ["1", "Test", "10.0", "5", "3", "Test", "3", "7"]
+    with patch("builtins.input", side_effect=user_input):
+        with patch("sys.stdout", new_callable=StringIO) as output:
+            with pytest.raises(SystemExit):  # Simulation d'arrêt avec "Quitter"
+                run_inventory_interface()
+            result = output.getvalue()
     assert "3 unités de Test vendues." in result
 
 
 def test_interface_invalid_option():
-    user_input = "9\n7\n"
-    with redirect_stdout(StringIO()) as output, pytest.raises(SystemExit):
-        with pytest.helpers.input_stream(user_input):
-            run_inventory_interface()
-    result = output.getvalue()
+    user_input = ["9", "7"]  # Option invalide, puis "Quitter"
+    with patch("builtins.input", side_effect=user_input):
+        with patch("sys.stdout", new_callable=StringIO) as output:
+            with pytest.raises(SystemExit):  # Simulation d'arrêt avec "Quitter"
+                run_inventory_interface()
+            result = output.getvalue()
     assert "Choix invalide" in result
