@@ -86,7 +86,6 @@ def test_tous_coules(grille_vide: Grille, grille_avec_bateaux: Grille) -> None:
 
     assert tous_coules(grille_avec_bateaux) is True
 
-# Tests supplémentaires pour augmenter la couverture
 def test_afficher_grille(grille_vide: Grille) -> None:
     """Teste l'affichage d'une grille."""
     captured_output = io.StringIO()
@@ -136,3 +135,45 @@ def test_bataille_navale_simulation(monkeypatch) -> None:
     output = captured_output.getvalue()
     assert "Félicitations" in output
     assert "Touché" in output or "Dans l'eau" in output
+# Tests pour afficher_grille
+def test_afficher_grille_cacher_bateaux(grille_vide: Grille) -> None:
+    grille_vide[0][0] = "B"
+    captured_output = io.StringIO()
+    sys.stdout = captured_output
+    afficher_grille(grille_vide, cacher_bateaux=True)
+    sys.stdout = sys.__stdout__
+    output = captured_output.getvalue()
+    assert "~" in output
+    assert "B" not in output  # Les bateaux doivent être cachés
+
+def test_afficher_grille_afficher_bateaux(grille_vide: Grille) -> None:
+    grille_vide[0][0] = "B"
+    captured_output = io.StringIO()
+    sys.stdout = captured_output
+    afficher_grille(grille_vide, cacher_bateaux=False)
+    sys.stdout = sys.__stdout__
+    output = captured_output.getvalue()
+    assert "B" in output
+
+# Test des cas interactifs (simulation utilisateur)
+def test_bataille_navale_interactive(monkeypatch) -> None:
+    inputs = iter(["0 0", "1 1", "2 2", "3 3", "4 4"])
+    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+    captured_output = io.StringIO()
+    sys.stdout = captured_output
+    bataille_navale()
+    sys.stdout = sys.__stdout__
+    output = captured_output.getvalue()
+    assert "Félicitations" in output
+
+# Cas supplémentaires pour effectuer_tir
+def test_effectuer_tir_hors_grille(grille_vide: Grille) -> None:
+    joueur_grille = creer_grille(TAILLE_GRILLE)
+    with pytest.raises(IndexError):
+        effectuer_tir(TAILLE_GRILLE, TAILLE_GRILLE, joueur_grille, grille_vide)
+
+def test_tir_sur_case_vide(grille_vide: Grille) -> None:
+    joueur_grille = creer_grille(TAILLE_GRILLE)
+    assert effectuer_tir(0, 0, joueur_grille, grille_vide) is False
+    assert joueur_grille[0][0] == "O"
+    assert grille_vide[0][0] == "O"
