@@ -215,11 +215,11 @@ def test_interface_add_product():
 
     def test_interface_remove_product():
     # Exécution du programme pour ajouter puis supprimer un produit
-    result = subprocess.run(
-        ['python', 'main.py'], 
-        input="1\nLaptop\n1200.0\n5\n2\nLaptop\n7\n", 
-        text=True, 
-        capture_output=True
+        result = subprocess.run(
+            ['python', 'main.py'], 
+            input="1\nLaptop\n1200.0\n5\n2\nLaptop\n7\n", 
+            text=True, 
+            capture_output=True
     )
     assert "Produit supprimé avec succès." in result.stdout
     assert "Liste des produits" in result.stdout  # Vérifier la mise à jour de la liste
@@ -235,11 +235,11 @@ def test_interface_sell_product():
     assert "Quantité restante: 3" in result.stdout
 
     def test_interface_invalid_option():
-    result = subprocess.run(
-        ['python', 'main.py'], 
-        input="9\n7\n", 
-        text=True, 
-        capture_output=True
+        result = subprocess.run(
+            ['python', 'main.py'], 
+            input="9\n7\n", 
+            text=True, 
+            capture_output=True
     )
     assert "Option invalide." in result.stdout
 
