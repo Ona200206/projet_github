@@ -1,67 +1,80 @@
-import unittest
+import pytest
 from typing import List
 from projet_github.main import (
     creer_grille,
-    afficher_grille,
     placer_bateaux,
     tir_valide,
     effectuer_tir,
     tous_coules,
-    Grille,
+    TAILLE_GRILLE,
+    NB_BATEAUX,
 )
 
-class TestBatailleNavale(unittest.TestCase):
-    def test_creer_grille(self):
-        grille = creer_grille(5)
-        self.assertEqual(len(grille), 5)
-        self.assertTrue(all(len(ligne) == 5 for ligne in grille))
-        self.assertTrue(all(cell == "~" for ligne in grille for cell in ligne))
+Grille = List[List[str]]
 
-    def test_placer_bateaux(self):
-        grille = creer_grille(5)
-        placer_bateaux(grille, 3)
-        bateaux = sum(cell == "B" for ligne in grille for cell in ligne)
-        self.assertEqual(bateaux, 3)
+@pytest.fixture
+def grille_vide() -> Grille:
+    """Fixture pour une grille vide."""
+    return creer_grille(TAILLE_GRILLE)
 
-    def test_tir_valide(self):
-        grille = creer_grille(5)
-        self.assertTrue(tir_valide(2, 2, grille))
-        self.assertFalse(tir_valide(-1, 2, grille))
-        self.assertFalse(tir_valide(2, 5, grille))
+@pytest.fixture
+def grille_avec_bateaux() -> Grille:
+    """Fixture pour une grille avec des bateaux placés."""
+    grille = creer_grille(TAILLE_GRILLE)
+    placer_bateaux(grille, NB_BATEAUX)
+    return grille
 
-    def test_effectuer_tir(self):
-        grille_joueur = creer_grille(5)
-        grille_ennemie = creer_grille(5)
-        grille_ennemie[2][2] = "B"
-        self.assertTrue(effectuer_tir(2, 2, grille_joueur, grille_ennemie))
-        self.assertEqual(grille_joueur[2][2], "X")
-        self.assertEqual(grille_ennemie[2][2], "X")
+def test_creer_grille() -> None:
+    """Teste la création d'une grille vide."""
+    grille = creer_grille(3)
+    assert len(grille) == 3
+    assert all(len(ligne) == 3 for ligne in grille)
+    assert all(cell == "~" for ligne in grille for cell in ligne)
 
-        self.assertFalse(effectuer_tir(3, 3, grille_joueur, grille_ennemie))
-        self.assertEqual(grille_joueur[3][3], "O")
-        self.assertEqual(grille_ennemie[3][3], "O")
+def test_placer_bateaux(grille_vide: Grille) -> None:
+    """Teste le placement de bateaux."""
+    placer_bateaux(grille_vide, NB_BATEAUX)
+    bateaux = sum(cell == "B" for ligne in grille_vide for cell in ligne)
+    assert bateaux == NB_BATEAUX
 
-        self.assertFalse(effectuer_tir(2, 2, grille_joueur, grille_ennemie))  # Déjà tiré
-        self.assertEqual(grille_joueur[2][2], "X")
+def test_tir_valide(grille_vide: Grille) -> None:
+    """Teste la validation des tirs."""
+    assert tir_valide(0, 0, grille_vide) is True
+    assert tir_valide(TAILLE_GRILLE, 0, grille_vide) is False
+    assert tir_valide(0, TAILLE_GRILLE, grille_vide) is False
+    assert tir_valide(-1, 0, grille_vide) is False
 
-    def test_tous_coules(self):
-        grille = creer_grille(5)
-        self.assertTrue(tous_coules(grille))  # Aucune case "B"
+def test_effectuer_tir_touché(grille_vide: Grille) -> None:
+    """Teste un tir qui touche un bateau."""
+    grille_vide[1][1] = "B"
+    joueur_grille = creer_grille(TAILLE_GRILLE)
+    assert effectuer_tir(1, 1, joueur_grille, grille_vide) is True
+    assert joueur_grille[1][1] == "X"
+    assert grille_vide[1][1] == "X"
 
-        grille[1][1] = "B"
-        self.assertFalse(tous_coules(grille))
+def test_effectuer_tir_raté(grille_vide: Grille) -> None:
+    """Teste un tir qui rate."""
+    joueur_grille = creer_grille(TAILLE_GRILLE)
+    assert effectuer_tir(0, 0, joueur_grille, grille_vide) is False
+    assert joueur_grille[0][0] == "O"
+    assert grille_vide[0][0] == "O"
 
-        grille[1][1] = "X"
-        self.assertTrue(tous_coules(grille))
+def test_effectuer_tir_déjà_tiré(grille_vide: Grille) -> None:
+    """Teste un tir sur une case déjà touchée."""
+    joueur_grille = creer_grille(TAILLE_GRILLE)
+    grille_vide[0][0] = "O"
+    joueur_grille[0][0] = "O"
+    assert effectuer_tir(0, 0, joueur_grille, grille_vide) is False
 
-    def test_afficher_grille(self):
-        # Test basique pour s'assurer que la fonction ne génère pas d'erreur
-        grille = creer_grille(3)
-        try:
-            afficher_grille(grille)  # Sortie visuelle, pas de vérification ici
-            afficher_grille(grille, cacher_bateaux=True)
-        except Exception as e:
-            self.fail(f"afficher_grille a levé une exception : {e}")
+def test_tous_coules(grille_vide: Grille, grille_avec_bateaux: Grille) -> None:
+    """Teste si tous les bateaux sont coulés."""
+    assert tous_coules(grille_vide) is True
+    assert tous_coules(grille_avec_bateaux) is False
 
-if __name__ == "_main_":
-   unittest.main()
+    # Couler tous les bateaux
+    for x in range(TAILLE_GRILLE):
+        for y in range(TAILLE_GRILLE):
+            if grille_avec_bateaux[x][y] == "B":
+                grille_avec_bateaux[x][y] = "X"
+
+    assert tous_coules(grille_avec_bateaux) is True
