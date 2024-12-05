@@ -71,7 +71,6 @@
   <h1>Source code for projet_github.main</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 
-
 <div class="viewcode-block" id="Product">
 <a class="viewcode-back" href="../../projet_github.main.html#projet_github.main.Product">[docs]</a>
 <span class="k">class</span> <span class="nc">Product</span><span class="p">:</span>
@@ -161,6 +160,77 @@
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Inventory(products=</span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">products</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="si">}</span><span class="s2">)&quot;</span></div>
 
+
+
+<div class="viewcode-block" id="run_inventory_interface">
+<a class="viewcode-back" href="../../projet_github.main.html#projet_github.main.run_inventory_interface">[docs]</a>
+<span class="k">def</span> <span class="nf">run_inventory_interface</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Interface utilisateur textuelle pour gérer l&#39;inventaire.&quot;&quot;&quot;</span>
+    <span class="n">inventory</span> <span class="o">=</span> <span class="n">Inventory</span><span class="p">()</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Gestion de l&#39;inventaire ---&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;1. Ajouter un produit&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;2. Supprimer un produit&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;3. Vendre un produit&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;4. Réapprovisionner un produit&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;5. Afficher la valeur totale de l&#39;inventaire&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;6. Afficher les produits&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;7. Quitter&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">choice</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Choisissez une option: &quot;</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Choix invalide. Veuillez entrer un nombre.&quot;</span><span class="p">)</span>
+            <span class="k">continue</span>
+
+        <span class="k">if</span> <span class="n">choice</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Nom du produit: &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">price</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Prix du produit: &quot;</span><span class="p">))</span>
+                <span class="n">quantity</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Quantité: &quot;</span><span class="p">))</span>
+                <span class="n">inventory</span><span class="o">.</span><span class="n">add_product</span><span class="p">(</span><span class="n">Product</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">price</span><span class="p">,</span> <span class="n">quantity</span><span class="p">))</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Produit </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> ajouté.&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">choice</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Nom du produit à supprimer: &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">inventory</span><span class="o">.</span><span class="n">remove_product</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Produit </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> supprimé.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Produit </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> introuvable.&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">choice</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Nom du produit à vendre: &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">amount</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Quantité à vendre: &quot;</span><span class="p">))</span>
+            <span class="n">product</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">find_product</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">product</span> <span class="ow">and</span> <span class="n">product</span><span class="o">.</span><span class="n">sell</span><span class="p">(</span><span class="n">amount</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">amount</span><span class="si">}</span><span class="s2"> unités de </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> vendues.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Vente échouée. Vérifiez le stock ou le produit.&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">choice</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Nom du produit à réapprovisionner: &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">amount</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Quantité à ajouter: &quot;</span><span class="p">))</span>
+            <span class="n">product</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">find_product</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">product</span><span class="p">:</span>
+                <span class="n">product</span><span class="o">.</span><span class="n">restock</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">amount</span><span class="si">}</span><span class="s2"> unités ajoutées au produit </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Produit introuvable.&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">choice</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Valeur totale de l&#39;inventaire: </span><span class="si">{</span><span class="n">inventory</span><span class="o">.</span><span class="n">get_total_value</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">choice</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Produits dans l&#39;inventaire:&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">inventory</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">choice</span> <span class="o">==</span> <span class="mi">7</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Au revoir!&quot;</span><span class="p">)</span>
+            <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Choix invalide. Veuillez réessayer.&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">run_inventory_interface</span><span class="p">()</span>
 </pre></div>
 
            </div>
