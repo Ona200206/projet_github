@@ -69,116 +69,108 @@
            <div itemprop="articleBody">
              
   <h1>Source code for projet_github.main</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
-
-<span class="c1"># Constantes</span>
-<span class="n">TAILLE_GRILLE</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
-<span class="n">NB_BATEAUX</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>
-<span class="n">Grille</span> <span class="o">=</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>
-
-<div class="viewcode-block" id="creer_grille">
-<a class="viewcode-back" href="../../projet_github.main.html#projet_github.main.creer_grille">[docs]</a>
-<span class="k">def</span> <span class="nf">creer_grille</span><span class="p">(</span><span class="n">taille</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Grille</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Crée une grille vide de taille donnée.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">[[</span><span class="s2">&quot;~&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">taille</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">taille</span><span class="p">)]</span></div>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 
 
-<div class="viewcode-block" id="afficher_grille">
-<a class="viewcode-back" href="../../projet_github.main.html#projet_github.main.afficher_grille">[docs]</a>
-<span class="k">def</span> <span class="nf">afficher_grille</span><span class="p">(</span><span class="n">grille</span><span class="p">:</span> <span class="n">Grille</span><span class="p">,</span> <span class="n">cacher_bateaux</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Affiche la grille dans un format lisible.&quot;&quot;&quot;</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  &quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">grille</span><span class="p">)))))</span>
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ligne</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">grille</span><span class="p">):</span>
-        <span class="n">ligne_affichee</span> <span class="o">=</span> <span class="p">[</span><span class="n">case</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">cacher_bateaux</span> <span class="ow">or</span> <span class="n">case</span> <span class="o">!=</span> <span class="s2">&quot;B&quot;</span> <span class="k">else</span> <span class="s2">&quot;~&quot;</span> <span class="k">for</span> <span class="n">case</span> <span class="ow">in</span> <span class="n">ligne</span><span class="p">]</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ligne_affichee</span><span class="p">))</span></div>
+<div class="viewcode-block" id="Product">
+<a class="viewcode-back" href="../../projet_github.main.html#projet_github.main.Product">[docs]</a>
+<span class="k">class</span> <span class="nc">Product</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Représente un produit dans l&#39;inventaire.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">price</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">quantity</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">price</span> <span class="o">=</span> <span class="n">price</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quantity</span> <span class="o">=</span> <span class="n">quantity</span>
+
+<div class="viewcode-block" id="Product.restock">
+<a class="viewcode-back" href="../../projet_github.main.html#projet_github.main.Product.restock">[docs]</a>
+    <span class="k">def</span> <span class="nf">restock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Ajoute une quantité au stock du produit.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">amount</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">quantity</span> <span class="o">+=</span> <span class="n">amount</span></div>
 
 
-<div class="viewcode-block" id="placer_bateaux">
-<a class="viewcode-back" href="../../projet_github.main.html#projet_github.main.placer_bateaux">[docs]</a>
-<span class="k">def</span> <span class="nf">placer_bateaux</span><span class="p">(</span><span class="n">grille</span><span class="p">:</span> <span class="n">Grille</span><span class="p">,</span> <span class="n">nb_bateaux</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Place un nombre donné de bateaux sur la grille aléatoirement.&quot;&quot;&quot;</span>
-    <span class="n">bateaux_places</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">while</span> <span class="n">bateaux_places</span> <span class="o">&lt;</span> <span class="n">nb_bateaux</span><span class="p">:</span>
-        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">TAILLE_GRILLE</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">TAILLE_GRILLE</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">grille</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;~&quot;</span><span class="p">:</span>
-            <span class="n">grille</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;B&quot;</span>
-            <span class="n">bateaux_places</span> <span class="o">+=</span> <span class="mi">1</span></div>
-
-
-<div class="viewcode-block" id="tir_valide">
-<a class="viewcode-back" href="../../projet_github.main.html#projet_github.main.tir_valide">[docs]</a>
-<span class="k">def</span> <span class="nf">tir_valide</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">grille</span><span class="p">:</span> <span class="n">Grille</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Vérifie si les coordonnées du tir sont valides.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">grille</span><span class="p">)</span> <span class="ow">and</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">grille</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
-
-
-<div class="viewcode-block" id="effectuer_tir">
-<a class="viewcode-back" href="../../projet_github.main.html#projet_github.main.effectuer_tir">[docs]</a>
-<span class="k">def</span> <span class="nf">effectuer_tir</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">grille_joueur</span><span class="p">:</span> <span class="n">Grille</span><span class="p">,</span> <span class="n">grille_ennemie</span><span class="p">:</span> <span class="n">Grille</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gère un tir sur la grille ennemie.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">grille_ennemie</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;B&quot;</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Touché !&quot;</span><span class="p">)</span>
-        <span class="n">grille_joueur</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;X&quot;</span>
-        <span class="n">grille_ennemie</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;X&quot;</span>
-        <span class="k">return</span> <span class="kc">True</span>
-    <span class="k">elif</span> <span class="n">grille_ennemie</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;~&quot;</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dans l&#39;eau...&quot;</span><span class="p">)</span>
-        <span class="n">grille_joueur</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;O&quot;</span>
-        <span class="n">grille_ennemie</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;O&quot;</span>
-        <span class="k">return</span> <span class="kc">False</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Déjà tiré ici !&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="Product.sell">
+<a class="viewcode-back" href="../../projet_github.main.html#projet_github.main.Product.sell">[docs]</a>
+    <span class="k">def</span> <span class="nf">sell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Vend une quantité du produit, retourne True si réussi.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">amount</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantity</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">quantity</span> <span class="o">-=</span> <span class="n">amount</span>
+            <span class="k">return</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="tous_coules">
-<a class="viewcode-back" href="../../projet_github.main.html#projet_github.main.tous_coules">[docs]</a>
-<span class="k">def</span> <span class="nf">tous_coules</span><span class="p">(</span><span class="n">grille</span><span class="p">:</span> <span class="n">Grille</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Vérifie si tous les bateaux de la grille sont coulés.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">case</span> <span class="o">!=</span> <span class="s2">&quot;B&quot;</span> <span class="k">for</span> <span class="n">ligne</span> <span class="ow">in</span> <span class="n">grille</span> <span class="k">for</span> <span class="n">case</span> <span class="ow">in</span> <span class="n">ligne</span><span class="p">)</span></div>
+<div class="viewcode-block" id="Product.value">
+<a class="viewcode-back" href="../../projet_github.main.html#projet_github.main.Product.value">[docs]</a>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retourne la valeur totale du stock pour ce produit.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">price</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantity</span></div>
 
 
-<div class="viewcode-block" id="lire_coordonnees">
-<a class="viewcode-back" href="../../projet_github.main.html#projet_github.main.lire_coordonnees">[docs]</a>
-<span class="k">def</span> <span class="nf">lire_coordonnees</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Lit et valide les coordonnées entrées par l&#39;utilisateur.&quot;&quot;&quot;</span>
-    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Entrez les coordonnées (format: x y) : &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
-            <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
-        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Entrée invalide. Utilisez le format : x y&quot;</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Product(name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, price=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">price</span><span class="si">}</span><span class="s2">, quantity=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">quantity</span><span class="si">}</span><span class="s2">)&quot;</span></div>
 
 
-<div class="viewcode-block" id="bataille_navale">
-<a class="viewcode-back" href="../../projet_github.main.html#projet_github.main.bataille_navale">[docs]</a>
-<span class="k">def</span> <span class="nf">bataille_navale</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Lance le jeu de bataille navale.&quot;&quot;&quot;</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Bienvenue dans la bataille navale simplifiée !&quot;</span><span class="p">)</span>
-    <span class="n">grille_joueur</span><span class="p">:</span> <span class="n">Grille</span> <span class="o">=</span> <span class="n">creer_grille</span><span class="p">(</span><span class="n">TAILLE_GRILLE</span><span class="p">)</span>
-    <span class="n">grille_ennemie</span><span class="p">:</span> <span class="n">Grille</span> <span class="o">=</span> <span class="n">creer_grille</span><span class="p">(</span><span class="n">TAILLE_GRILLE</span><span class="p">)</span>
-    <span class="n">placer_bateaux</span><span class="p">(</span><span class="n">grille_ennemie</span><span class="p">,</span> <span class="n">NB_BATEAUX</span><span class="p">)</span>
-    <span class="n">tours</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
 
-    <span class="k">while</span> <span class="ow">not</span> <span class="n">tous_coules</span><span class="p">(</span><span class="n">grille_ennemie</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Votre grille :&quot;</span><span class="p">)</span>
-        <span class="n">afficher_grille</span><span class="p">(</span><span class="n">grille_joueur</span><span class="p">)</span>
-        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">lire_coordonnees</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">tir_valide</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">grille_joueur</span><span class="p">):</span>
-            <span class="n">effectuer_tir</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">grille_joueur</span><span class="p">,</span> <span class="n">grille_ennemie</span><span class="p">)</span>
-            <span class="n">tours</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Coordonnées invalides. Réessayez.&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="Inventory">
+<a class="viewcode-back" href="../../projet_github.main.html#projet_github.main.Inventory">[docs]</a>
+<span class="k">class</span> <span class="nc">Inventory</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gère un inventaire de produits.&quot;&quot;&quot;</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Félicitations, vous avez coulé tous les bateaux ennemis !&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Vous avez gagné en </span><span class="si">{</span><span class="n">tours</span><span class="si">}</span><span class="s2"> tours.&quot;</span><span class="p">)</span>
-    <span class="n">afficher_grille</span><span class="p">(</span><span class="n">grille_ennemie</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">products</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Product</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="Inventory.add_product">
+<a class="viewcode-back" href="../../projet_github.main.html#projet_github.main.Inventory.add_product">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_product</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product</span><span class="p">:</span> <span class="n">Product</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Ajoute un nouveau produit à l&#39;inventaire.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">product</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">products</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">products</span><span class="p">[</span><span class="n">product</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">product</span></div>
 
 
-<span class="c1"># Point d&#39;entrée</span>
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;_main_&quot;</span><span class="p">:</span>
-    <span class="n">bataille_navale</span><span class="p">()</span>
+<div class="viewcode-block" id="Inventory.remove_product">
+<a class="viewcode-back" href="../../projet_github.main.html#projet_github.main.Inventory.remove_product">[docs]</a>
+    <span class="k">def</span> <span class="nf">remove_product</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Supprime un produit de l&#39;inventaire.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">product_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">products</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">products</span><span class="p">[</span><span class="n">product_name</span><span class="p">]</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="Inventory.get_total_value">
+<a class="viewcode-back" href="../../projet_github.main.html#projet_github.main.Inventory.get_total_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_total_value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calcule la valeur totale de l&#39;inventaire.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">product</span><span class="o">.</span><span class="n">value</span><span class="p">()</span> <span class="k">for</span> <span class="n">product</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">products</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="Inventory.find_product">
+<a class="viewcode-back" href="../../projet_github.main.html#projet_github.main.Inventory.find_product">[docs]</a>
+    <span class="k">def</span> <span class="nf">find_product</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Product</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Recherche un produit par son nom.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">products</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">product_name</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Inventory(products=</span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">products</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+
+
+
+<span class="c1"># Exemple d&#39;utilisation (sans interaction utilisateur)</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">inventory</span> <span class="o">=</span> <span class="n">Inventory</span><span class="p">()</span>
+    <span class="n">product1</span> <span class="o">=</span> <span class="n">Product</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Laptop&quot;</span><span class="p">,</span> <span class="n">price</span><span class="o">=</span><span class="mf">1200.0</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">product2</span> <span class="o">=</span> <span class="n">Product</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Phone&quot;</span><span class="p">,</span> <span class="n">price</span><span class="o">=</span><span class="mf">800.0</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+    <span class="n">inventory</span><span class="o">.</span><span class="n">add_product</span><span class="p">(</span><span class="n">product1</span><span class="p">)</span>
+    <span class="n">inventory</span><span class="o">.</span><span class="n">add_product</span><span class="p">(</span><span class="n">product2</span><span class="p">)</span>
+
+    <span class="n">product1</span><span class="o">.</span><span class="n">sell</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">product2</span><span class="o">.</span><span class="n">restock</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Valeur totale de l&#39;inventaire: </span><span class="si">{</span><span class="n">inventory</span><span class="o">.</span><span class="n">get_total_value</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">inventory</span><span class="p">)</span>
 </pre></div>
 
            </div>
