@@ -238,28 +238,22 @@ def test_interface_invalid_option():
 
 
 def test_interface_sell_more_than_stock():
-    user_input = ["1", "Test", "10.0", "5", "3", "Test", "10", "7"]  # Essayer de vendre plus que le stock
-    with patch("builtins.input", side_effect=user_input):
-        with patch("sys.stdout", new_callable=StringIO) as output:
-            run_inventory_interface()
-            result = output.getvalue()
-    assert "Stock insuffisant pour la vente." in result
+    user_input = ["1", "Laptop", "1200.0", "5", "3", "Laptop", "10", "7"]
+    with patch("builtins.input", side_effect=user_input), patch("sys.stdout", new_callable=StringIO) as output:
+        run_inventory_interface()
+        assert "Stock insuffisant pour la vente." in output.getvalue()
 
 
 def test_interface_restock_negative():
-    user_input = ["1", "Test", "10.0", "5", "4", "Test", "-5", "7"]  # Réapprovisionnement négatif
-    with patch("builtins.input", side_effect=user_input):
-        with patch("sys.stdout", new_callable=StringIO) as output:
-            run_inventory_interface()
-            result = output.getvalue()
-    assert "Quantité invalide pour le réapprovisionnement." in result
+    user_input = ["1", "Laptop", "1200.0", "5", "4", "Laptop", "-10", "7"]
+    with patch("builtins.input", side_effect=user_input), patch("sys.stdout", new_callable=StringIO) as output:
+        run_inventory_interface()
+        assert "Quantité invalide pour le réapprovisionnement." in output.getvalue()
 
 
 def test_interface_option_quit():
-    user_input = ["7"]  # Option pour quitter directement
-    with patch("builtins.input", side_effect=user_input):
-        with patch("sys.stdout", new_callable=StringIO) as output:
-            run_inventory_interface()
-            result = output.getvalue()
-    assert "Quitter le programme." in result
-
+    user_input = ["7"]
+    with patch("builtins.input", side_effect=user_input), patch("sys.stdout", new_callable=StringIO) as output:
+        run_inventory_interface()
+        assert "Quitter le programme." in output.getvalue()
+        assert "Au revoir!" in output.getvalue()

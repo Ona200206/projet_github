@@ -99,21 +99,27 @@ def run_inventory_interface():
                 print(f"Produit {name} supprimé.")
             else:
                 print(f"Produit {name} introuvable.")
-        elif choice == 3:
-            name = input("Nom du produit à vendre: ").strip()
-            amount = int(input("Quantité à vendre: "))
-            product = inventory.find_product(name)
-            if product and product.sell(amount):
-                print(f"{amount} unités de {name} vendues.")
-            else:
-                print("Vente échouée. Vérifiez le stock ou le produit.")
-        elif choice == 4:
-            name = input("Nom du produit à réapprovisionner: ").strip()
-            amount = int(input("Quantité à ajouter: "))
+        elif choice == "3":
+            name = input("Nom du produit à vendre : ")
+            quantity = int(input("Quantité à vendre : "))
             product = inventory.find_product(name)
             if product:
-                product.restock(amount)
-                print(f"{amount} unités ajoutées au produit {name}.")
+                if product.sell(quantity):
+                    print(f"{quantity} unités de {name} vendues.")
+                else:
+                    print("Stock insuffisant pour la vente.")  # Correction ici
+            else:
+                print("Produit introuvable.")
+        elif choice == "4":
+            name = input("Nom du produit à réapprovisionner : ")
+            quantity = int(input("Quantité à ajouter : "))
+            product = inventory.find_product(name)
+            if product:
+                if quantity > 0:
+                    product.restock(quantity)
+                    print(f"Produit {name} réapprovisionné.")
+                else:
+                    print("Quantité invalide pour le réapprovisionnement.")  # Correction ici
             else:
                 print("Produit introuvable.")
         elif choice == 5:
@@ -121,7 +127,8 @@ def run_inventory_interface():
         elif choice == 6:
             print("Produits dans l'inventaire:")
             print(inventory)
-        elif choice == 7:
+        elif choice == "7":
+            print("Quitter le programme.")  # Correction ici
             print("Au revoir!")
             break
         else:
