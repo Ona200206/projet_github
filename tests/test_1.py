@@ -227,3 +227,35 @@ def test_inventory_full_workflow():
     assert inventory.remove_product("Phone") is True
     assert inventory.get_total_value() == 2000.0
 
+def test_main_example():
+    # Initialisation de l'inventaire
+    inventory = Inventory()
+    product1 = Product(name="Laptop", price=1200.0, quantity=5)
+    product2 = Product(name="Phone", price=800.0, quantity=10)
+
+    # Ajout des produits
+    inventory.add_product(product1)
+    inventory.add_product(product2)
+
+    # Vérifiez que les produits ont été ajoutés
+    assert len(inventory.products) == 2
+    assert inventory.products["Laptop"] == product1
+    assert inventory.products["Phone"] == product2
+
+    # Vente de 2 ordinateurs portables
+    assert product1.sell(2) is True
+    assert product1.quantity == 3
+
+    # Réapprovisionnement de 5 téléphones
+    product2.restock(5)
+    assert product2.quantity == 15
+
+    # Vérifiez la valeur totale de l'inventaire
+    expected_value = (3 * 1200.0) + (15 * 800.0)
+    assert inventory.get_total_value() == expected_value
+
+    # Vérifiez l'état de l'inventaire
+    assert repr(inventory) == (
+        "Inventory(products=[Product(name=Laptop, price=1200.0, quantity=3), "
+        "Product(name=Phone, price=800.0, quantity=15)])"
+    )
