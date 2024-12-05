@@ -1,7 +1,6 @@
 import pytest
-from io import StringIO
 import subprocess
-from projet_github.main import Product, Inventory, run_inventory_interface
+from projet_github.main import Product, Inventory
 
 
 # Tests pour la classe Product
