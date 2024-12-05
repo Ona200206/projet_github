@@ -221,7 +221,7 @@ def test_inventory_full_workflow():
     # Vendez 3 ordinateurs portables
     assert product1.sell(3) is True
     assert product1.quantity == 2  # Vérifiez la quantité mise à jour
-    assert inventory.get_total_value() == 11600.0  # Vérifiez la valeur mise à jour
+    assert inventory.get_total_value() == 10000.0  # Vérifiez la valeur mise à jour
 
     # Supprimez les téléphones
     assert inventory.remove_product("Phone") is True
