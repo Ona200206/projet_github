@@ -1,83 +1,28 @@
 import pytest
-from projet_github.main import (
-    creer_grille,
-    afficher_grille,
-    placer_bateaux,
-    tir_valide,
-    effectuer_tir,
-    tous_coules,
-    Grille,
-)
+from planet_management import Planet, PlanetCatalog
 
-# Test de creer_grille
-def test_creer_grille() -> None:
-    grille: Grille = creer_grille(5)
-    assert len(grille) == 5
-    assert all(len(ligne) == 5 for ligne in grille)
-    assert all(cell == "~" for ligne in grille for cell in ligne)
+def test_planet_creation():
+    planet = Planet("Terre", 5.972e24, 6371000, 149.6e6, {"Azote": 78, "Oxygène": 21, "Argon": 1})
+    assert planet.name == "Terre"
+    assert round(planet.surface_gravity(), 2) == 9.81
+    assert "Azote: 78%" in planet.atmosphere_summary()
 
-# Test d'afficher_grille
-def test_afficher_grille(capsys: pytest.CaptureFixture) -> None:
-    grille: Grille = [["~", "~", "~"], ["~", "B", "~"], ["~", "~", "B"]]
-    afficher_grille(grille, cacher_bateaux=False)
-    captured = capsys.readouterr()
-    assert "B" in captured.out
+def test_catalog_operations():
+    catalog = PlanetCatalog()
+    earth = Planet("Terre", 5.972e24, 6371000, 149.6e6, {"Azote": 78, "Oxygène": 21, "Argon": 1})
+    mars = Planet("Mars", 6.39e23, 3389500, 227.9e6, {"CO2": 95.32, "Azote": 2.7, "Argon": 1.6})
+    
+    catalog.add_planet(earth)
+    catalog.add_planet(mars)
+    
+    assert catalog.list_all_planets() == ["Terre", "Mars"]
+    assert catalog.get_planet_by_name("Mars").name == "Mars"
+    assert round(catalog.average_distance_from_sun(), 1) == 188.75e6
 
-    afficher_grille(grille, cacher_bateaux=True)
-    captured = capsys.readouterr()
-    assert "B" not in captured.out
-
-# Test de placer_bateaux
-def test_placer_bateaux() -> None:
-    grille: Grille = creer_grille(5)
-    placer_bateaux(grille, 3)
-    bateaux = sum(cell == "B" for ligne in grille for cell in ligne)
-    assert bateaux == 3
-
-# Test de tir_valide
-def test_tir_valide() -> None:
-    grille: Grille = creer_grille(5)
-    assert tir_valide(0, 0, grille) is True
-    assert tir_valide(-1, 0, grille) is False
-    assert tir_valide(5, 5, grille) is False
-
-# Test d'effectuer_tir
-def test_effectuer_tir() -> None:
-    grille_joueur: Grille = creer_grille(5)
-    grille_ennemie: Grille = creer_grille(5)
-    grille_ennemie[2][2] = "B"
-
-    # Test toucher
-    assert effectuer_tir(2, 2, grille_joueur, grille_ennemie) is True
-    assert grille_joueur[2][2] == "X"
-    assert grille_ennemie[2][2] == "X"
-
-    # Test dans l'eau
-    assert effectuer_tir(1, 1, grille_joueur, grille_ennemie) is False
-    assert grille_joueur[1][1] == "O"
-    assert grille_ennemie[1][1] == "O"
-
-    # Test déjà tiré
-    assert effectuer_tir(1, 1, grille_joueur, grille_ennemie) is False
-
-# Test de tous_coules
-def test_tous_coules() -> None:
-    grille: Grille = [["~", "~", "~"], ["~", "B", "~"], ["~", "X", "B"]]
-    assert tous_coules(grille) is False
-    grille[1][1] = "X"
-    grille[2][2] = "X"
-    assert tous_coules(grille) is True
-
-# Test des exceptions pour les coordonnées invalides
-def test_tir_invalide() -> None:
-    grille_joueur: Grille = creer_grille(5)
-    grille_ennemie: Grille = creer_grille(5)
-    grille_ennemie[2][2] = "B"
-
-    # Tir hors limites
-    with pytest.raises(IndexError):
-        effectuer_tir(6, 6, grille_joueur, grille_ennemie)
-
-    # Tir sur coordonnées négatives
-    with pytest.raises(IndexError):
-        effectuer_tir(-1, -1, grille_joueur, grille_ennemie)
+def test_invalid_operations():
+    catalog = PlanetCatalog()
+    with pytest.raises(ValueError, match="Aucune planète nommée 'Jupiter' trouvée."):
+        catalog.get_planet_by_name("Jupiter")
+    
+    with pytest.raises(ValueError, match="Le catalogue est vide."):
+        catalog.average_distance_from_sun()

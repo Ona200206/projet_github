@@ -1,86 +1,86 @@
-import random
-from typing import List, Tuple
+from typing import List, Dict
 
-# Constantes
-TAILLE_GRILLE: int = 5
-NB_BATEAUX: int = 3
-Grille = List[List[str]]
+class Planet:
+    """Représentation d'une planète avec ses propriétés physiques et atmosphériques."""
+    
+    def __init__(self, name: str, mass: float, radius: float, distance_from_sun: float, atmosphere: Dict[str, float]):
+        """
+        Initialise une planète avec ses propriétés.
+        
+        :param name: Nom de la planète.
+        :param mass: Masse de la planète en kilogrammes.
+        :param radius: Rayon de la planète en mètres.
+        :param distance_from_sun: Distance moyenne du Soleil en kilomètres.
+        :param atmosphere: Composition atmosphérique (% de chaque gaz).
+        """
+        self.name = name
+        self.mass = mass
+        self.radius = radius
+        self.distance_from_sun = distance_from_sun
+        self.atmosphere = atmosphere
 
-def creer_grille(taille: int) -> Grille:
-    """Crée une grille vide de taille donnée."""
-    return [["~"] * taille for _ in range(taille)]
+    def surface_gravity(self) -> float:
+        """
+        Calcule la gravité à la surface de la planète.
+        
+        :return: Gravité en m/s².
+        """
+        G = 6.67430e-11  # Constante gravitationnelle (m³/kg/s²)
+        return G * self.mass / (self.radius ** 2)
 
-def afficher_grille(grille: Grille, cacher_bateaux: bool = False) -> None:
-    """Affiche la grille dans un format lisible."""
-    print("  " + " ".join(map(str, range(len(grille)))))
-    for i, ligne in enumerate(grille):
-        ligne_affichee = [case if not cacher_bateaux or case != "B" else "~" for case in ligne]
-        print(f"{i} " + " ".join(ligne_affichee))
+    def atmosphere_summary(self) -> str:
+        """
+        Génère un résumé de la composition atmosphérique.
+        
+        :return: Chaîne décrivant les gaz principaux.
+        """
+        summary = ', '.join([f"{gas}: {percentage}%" for gas, percentage in self.atmosphere.items()])
+        return f"Composition atmosphérique de {self.name}: {summary}"
 
-def placer_bateaux(grille: Grille, nb_bateaux: int) -> None:
-    """Place un nombre donné de bateaux sur la grille aléatoirement."""
-    bateaux_places = 0
-    while bateaux_places < nb_bateaux:
-        x, y = random.randint(0, TAILLE_GRILLE - 1), random.randint(0, TAILLE_GRILLE - 1)
-        if grille[x][y] == "~":
-            grille[x][y] = "B"
-            bateaux_places += 1
 
-def tir_valide(x: int, y: int, grille: Grille) -> bool:
-    """Vérifie si les coordonnées du tir sont valides."""
-    return 0 <= x < len(grille) and 0 <= y < len(grille[0])
+class PlanetCatalog:
+    """Catalogue pour gérer une collection de planètes."""
+    
+    def __init__(self):
+        """Initialise un catalogue vide."""
+        self.planets: List[Planet] = []
 
-def effectuer_tir(x: int, y: int, grille_joueur: Grille, grille_ennemie: Grille) -> bool:
-    """Gère un tir sur la grille ennemie."""
-    if grille_ennemie[x][y] == "B":
-        print("Touché !")
-        grille_joueur[x][y] = "X"
-        grille_ennemie[x][y] = "X"
-        return True
-    elif grille_ennemie[x][y] == "~":
-        print("Dans l'eau...")
-        grille_joueur[x][y] = "O"
-        grille_ennemie[x][y] = "O"
-        return False
-    else:
-        print("Déjà tiré ici !")
-        return False
+    def add_planet(self, planet: Planet) -> None:
+        """
+        Ajoute une planète au catalogue.
+        
+        :param planet: Objet Planet à ajouter.
+        """
+        self.planets.append(planet)
 
-def tous_coules(grille: Grille) -> bool:
-    """Vérifie si tous les bateaux de la grille sont coulés."""
-    return all(case != "B" for ligne in grille for case in ligne)
+    def get_planet_by_name(self, name: str) -> Planet:
+        """
+        Récupère une planète par son nom.
+        
+        :param name: Nom de la planète.
+        :return: Objet Planet correspondant.
+        :raises ValueError: Si aucune planète avec ce nom n'est trouvée.
+        """
+        for planet in self.planets:
+            if planet.name == name:
+                return planet
+        raise ValueError(f"Aucune planète nommée '{name}' trouvée.")
 
-def lire_coordonnees() -> Tuple[int, int]:
-    """Lit et valide les coordonnées entrées par l'utilisateur."""
-    while True:
-        try:
-            x, y = map(int, input("Entrez les coordonnées (format: x y) : ").split())
-            return x, y
-        except ValueError:
-            print("Entrée invalide. Utilisez le format : x y")
+    def list_all_planets(self) -> List[str]:
+        """
+        Liste tous les noms des planètes dans le catalogue.
+        
+        :return: Liste des noms de planètes.
+        """
+        return [planet.name for planet in self.planets]
 
-def bataille_navale() -> None:
-    """Lance le jeu de bataille navale."""
-    print("Bienvenue dans la bataille navale simplifiée !")
-    grille_joueur: Grille = creer_grille(TAILLE_GRILLE)
-    grille_ennemie: Grille = creer_grille(TAILLE_GRILLE)
-    placer_bateaux(grille_ennemie, NB_BATEAUX)
-    tours: int = 0
-
-    while not tous_coules(grille_ennemie):
-        print("\nVotre grille :")
-        afficher_grille(grille_joueur)
-        x, y = lire_coordonnees()
-        if tir_valide(x, y, grille_joueur):
-            effectuer_tir(x, y, grille_joueur, grille_ennemie)
-            tours += 1
-        else:
-            print("Coordonnées invalides. Réessayez.")
-
-    print("\nFélicitations, vous avez coulé tous les bateaux ennemis !")
-    print(f"Vous avez gagné en {tours} tours.")
-    afficher_grille(grille_ennemie)
-
-# Point d'entrée
-if __name__ == "_main_":
-    bataille_navale()
+    def average_distance_from_sun(self) -> float:
+        """
+        Calcule la distance moyenne des planètes au Soleil.
+        
+        :return: Distance moyenne en kilomètres.
+        """
+        if not self.planets:
+            raise ValueError("Le catalogue est vide.")
+        total_distance = sum(planet.distance_from_sun for planet in self.planets)
+        return total_distance / len(self.planets)
