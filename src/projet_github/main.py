@@ -63,9 +63,8 @@ class Inventory:
 
     def __repr__(self) -> str:
         return f"Inventory(products={list(self.products.values())})"
-
-
-# Exemple d'utilisation (sans interaction utilisateur)
+    
+    # Exemple d'utilisation (sans interaction utilisateur)
 if __name__ == "__main__":
     inventory = Inventory()
     product1 = Product(name="Laptop", price=1200.0, quantity=5)
@@ -79,4 +78,3 @@ if __name__ == "__main__":
 
     print(f"Valeur totale de l'inventaire: {inventory.get_total_value():.2f}")
     print(inventory)
-    
