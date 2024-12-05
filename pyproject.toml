@@ -4,9 +4,6 @@ name = "projet_github"
 description = "github manierski troadec"
 authors = [
     { name = 'Arnaud Somville', email = 'arnaud.somville@estaca.eu' },
-    {name = "Arnaud SOMVILLE", email = "arnaud.somville@estaca.eu"},
-    {name = "Troadec_Manierski", email = ""},
-    {name = "", email = ""},
 ]
 version = "0.1.0"
 dependencies = [
