@@ -1,114 +1,75 @@
-from typing import List, Dict
+from typing import Dict
 
 
-class Planet:
-    """Représentation d'une planète avec ses propriétés physiques et atmosphériques."""
-    
-    def __init__(self, name: str, mass: float, radius: float, distance_from_sun: float, atmosphere: Dict[str, float]):
+class Product:
+    """Représente un produit dans l'inventaire."""
+
+    def __init__(self, name: str, price: float, quantity: int) -> None:
         self.name = name
-        self.mass = mass
-        self.radius = radius
-        self.distance_from_sun = distance_from_sun
-        self.atmosphere = atmosphere
+        self.price = price
+        self.quantity = quantity
 
-    def surface_gravity(self) -> float:
-        G = 6.67430e-11  # Constante gravitationnelle (m³/kg/s²)
-        return G * self.mass / (self.radius ** 2)
+    def restock(self, amount: int) -> None:
+        """Ajoute une quantité au stock du produit."""
+        if amount > 0:
+            self.quantity += amount
 
-    def atmosphere_summary(self) -> str:
-        summary = ', '.join([f"{gas}: {percentage}%" for gas, percentage in self.atmosphere.items()])
-        return f"Composition atmosphérique de {self.name}: {summary}"
+    def sell(self, amount: int) -> bool:
+        """Vend une quantité du produit, retourne True si réussi."""
+        if 0 < amount <= self.quantity:
+            self.quantity -= amount
+            return True
+        return False
 
+    def value(self) -> float:
+        """Retourne la valeur totale du stock pour ce produit."""
+        return self.price * self.quantity
 
-class PlanetCatalog:
-    """Catalogue pour gérer une collection de planètes."""
-    
-    def __init__(self):
-        self.planets: List[Planet] = []
-
-    def add_planet(self, planet: Planet) -> None:
-        self.planets.append(planet)
-
-    def get_planet_by_name(self, name: str) -> Planet:
-        for planet in self.planets:
-            if planet.name == name:
-                return planet
-        raise ValueError(f"Aucune planète nommée '{name}' trouvée.")
-
-    def list_all_planets(self) -> List[str]:
-        return [planet.name for planet in self.planets]
-
-    def average_distance_from_sun(self) -> float:
-        if not self.planets:
-            raise ValueError("Le catalogue est vide.")
-        total_distance = sum(planet.distance_from_sun for planet in self.planets)
-        return total_distance / len(self.planets)
+    def __repr__(self) -> str:
+        return f"Product(name={self.name}, price={self.price}, quantity={self.quantity})"
 
 
-def display_menu():
-    """Affiche le menu principal."""
-    print("\n--- Gestion des Planètes ---")
-    print("1. Ajouter une planète")
-    print("2. Lister toutes les planètes")
-    print("3. Afficher les détails d'une planète")
-    print("4. Calculer la distance moyenne des planètes au Soleil")
-    print("5. Quitter")
+class Inventory:
+    """Gère un inventaire de produits."""
+
+    def __init__(self) -> None:
+        self.products: Dict[str, Product] = {}
+
+    def add_product(self, product: Product) -> None:
+        """Ajoute un nouveau produit à l'inventaire."""
+        if product.name not in self.products:
+            self.products[product.name] = product
+
+    def remove_product(self, product_name: str) -> bool:
+        """Supprime un produit de l'inventaire."""
+        if product_name in self.products:
+            del self.products[product_name]
+            return True
+        return False
+
+    def get_total_value(self) -> float:
+        """Calcule la valeur totale de l'inventaire."""
+        return sum(product.value() for product in self.products.values())
+
+    def find_product(self, product_name: str) -> Product | None:
+        """Recherche un produit par son nom."""
+        return self.products.get(product_name)
+
+    def __repr__(self) -> str:
+        return f"Inventory(products={list(self.products.values())})"
 
 
-def main():
-    catalog = PlanetCatalog()
-    while True:
-        display_menu()
-        try:
-            choice = int(input("Choisissez une option : "))
-            if choice == 1:
-                # Ajouter une planète
-                name = input("Nom de la planète : ")
-                mass = float(input("Masse (kg) : "))
-                radius = float(input("Rayon (m) : "))
-                distance_from_sun = float(input("Distance au Soleil (km) : "))
-                atmosphere_input = input(
-                    "Composition atmosphérique (exemple : Oxygène:21,Azote:78) : "
-                )
-                atmosphere = {k: float(v) for k, v in (item.split(":") for item in atmosphere_input.split(","))}
-                planet = Planet(name, mass, radius, distance_from_sun, atmosphere)
-                catalog.add_planet(planet)
-                print(f"La planète '{name}' a été ajoutée avec succès.")
-            elif choice == 2:
-                # Lister toutes les planètes
-                planets = catalog.list_all_planets()
-                if not planets:
-                    print("Aucune planète dans le catalogue.")
-                else:
-                    print("Planètes dans le catalogue :")
-                    for p in planets:
-                        print(f"- {p}")
-            elif choice == 3:
-                # Afficher les détails d'une planète
-                name = input("Entrez le nom de la planète : ")
-                try:
-                    planet = catalog.get_planet_by_name(name)
-                    print(f"--- Détails de {planet.name} ---")
-                    print(f"Masse : {planet.mass} kg")
-                    print(f"Rayon : {planet.radius} m")
-                    print(f"Distance au Soleil : {planet.distance_from_sun} km")
-                    print(f"Gravité de surface : {planet.surface_gravity():.2f} m/s²")
-                    print(planet.atmosphere_summary())
-                except ValueError as e:
-                    print(e)
-            elif choice == 4:
-                # Calculer la distance moyenne au Soleil
-                try:
-                    avg_distance = catalog.average_distance_from_sun()
-                    print(f"Distance moyenne au Soleil : {avg_distance:.2f} km")
-                except ValueError as e:
-                    print(e)
-            elif choice == 5:
-                # Quitter
-                print("Au revoir !")
-                break
-            else:
-                print("Choix invalide, veuillez réessayer.")
-        except ValueError:
-            print("Entrée non valide. Veuillez entrer un nombre.")
-main()
+# Exemple d'utilisation (sans interaction utilisateur)
+if __name__ == "__main__":
+    inventory = Inventory()
+    product1 = Product(name="Laptop", price=1200.0, quantity=5)
+    product2 = Product(name="Phone", price=800.0, quantity=10)
+
+    inventory.add_product(product1)
+    inventory.add_product(product2)
+
+    product1.sell(2)
+    product2.restock(5)
+
+    print(f"Valeur totale de l'inventaire: {inventory.get_total_value():.2f}")
+    print(inventory)
