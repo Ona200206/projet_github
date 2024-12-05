@@ -20,6 +20,11 @@ def test_product_value_zero_quantity():
     assert product.value() == 0.0
 
 
+def test_product_value_negative_price():
+    product = Product(name="Test", price=-10.0, quantity=5)
+    assert product.value() == -50.0
+
+
 def test_product_sell_success():
     product = Product(name="Test", price=10.0, quantity=5)
     assert product.sell(3) is True
@@ -31,6 +36,12 @@ def test_product_sell_failure():
     assert not product.sell(6)  # Trop à vendre
     assert not product.sell(-1)  # Quantité invalide
     assert not product.sell(0)  # Quantité invalide
+
+
+def test_product_sell_boundary():
+    product = Product(name="Test", price=10.0, quantity=1)
+    assert product.sell(1) is True
+    assert product.quantity == 0
 
 
 def test_product_restock_success():
@@ -62,6 +73,15 @@ def test_inventory_add_product():
     inventory.add_product(product)
     assert len(inventory.products) == 1
     assert inventory.products["Test"] == product
+
+
+def test_inventory_add_multiple_products():
+    inventory = Inventory()
+    product1 = Product(name="Test", price=10.0, quantity=5)
+    product2 = Product(name="Test2", price=20.0, quantity=3)
+    inventory.add_product(product1)
+    inventory.add_product(product2)
+    assert len(inventory.products) == 2
 
 
 def test_inventory_add_existing_product():
@@ -110,6 +130,13 @@ def test_inventory_find_product_success():
 def test_inventory_find_product_failure():
     inventory = Inventory()
     assert inventory.find_product("NonExistent") is None
+
+
+def test_inventory_find_product_similar_name():
+    inventory = Inventory()
+    product = Product(name="Test", price=10.0, quantity=5)
+    inventory.add_product(product)
+    assert inventory.find_product("Test2") is None
 
 
 def test_inventory_repr():
