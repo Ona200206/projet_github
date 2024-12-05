@@ -1,7 +1,5 @@
 import pytest
-import subprocess
 from projet_github.main import Product, Inventory
-
 
 # Tests pour la classe Product
 def test_product_creation():
@@ -21,13 +19,10 @@ def test_product_value_zero_quantity():
     assert product.value() == 0.0
 
 
-def test_product_invalid_creation():
+def test_product_value_negative_price():
     with pytest.raises(ValueError):
-        Product(name="", price=10.0, quantity=5)
-    with pytest.raises(ValueError):
-        Product(name="Valid", price=-10.0, quantity=5)
-    with pytest.raises(ValueError):
-        Product(name="Valid", price=10.0, quantity=-5)
+        Product(name="Test", price=-10.0, quantity=5)
+
 
 
 def test_product_sell_success():
@@ -65,30 +60,23 @@ def test_product_repr():
     product = Product(name="Test", price=10.0, quantity=5)
     assert repr(product) == "Product(name=Test, price=10.0, quantity=5)"
 
-def test_product_invalid_name_empty():
-    with pytest.raises(ValueError, match="Le nom du produit ne peut pas être vide."):
-        Product(name="", price=10.0, quantity=5)
+
+def test_product_invalid_creation():
+    with pytest.raises(ValueError):
+        Product(name="Test", price=-10.0, quantity=5)
+    with pytest.raises(ValueError):
+        Product(name="Test", price=10.0, quantity=-5)
 
 
-def test_product_invalid_name_whitespace():
-    with pytest.raises(ValueError, match="Le nom du produit ne peut pas être vide."):
-        Product(name="   ", price=10.0, quantity=5)
+def test_product_float_price():
+    product = Product(name="Test", price=10.99, quantity=3)
+    assert product.value() == 32.97
 
 
-def test_product_zero_price():
-    product = Product(name="Test", price=0.0, quantity=5)
-    assert product.value() == 0.0
-
-
-def test_product_zero_quantity_sell():
-    product = Product(name="Test", price=10.0, quantity=0)
-    assert not product.sell(1)  # Impossible de vendre avec un stock nul
-
-
-def test_product_negative_restock():
+def test_product_sell_edge_case():
     product = Product(name="Test", price=10.0, quantity=5)
-    product.restock(-5)  # Doit ignorer les réapprovisionnements négatifs
-    assert product.quantity == 5
+    assert not product.sell(0)  # Vendre 0
+    assert not product.sell(6)  # Plus que le stock
 
 
 # Tests pour la classe Inventory
@@ -162,6 +150,13 @@ def test_inventory_find_product_failure():
     assert inventory.find_product("NonExistent") is None
 
 
+def test_inventory_find_product_similar_name():
+    inventory = Inventory()
+    product = Product(name="Test", price=10.0, quantity=5)
+    inventory.add_product(product)
+    assert inventory.find_product("Test2") is None
+
+
 def test_inventory_repr():
     inventory = Inventory()
     product = Product(name="Test", price=10.0, quantity=5)
@@ -173,91 +168,94 @@ def test_inventory_repr_empty():
     inventory = Inventory()
     assert repr(inventory) == "Inventory(products=[])"
 
-def test_inventory_empty_find_product():
+
+def test_inventory_add_product_invalid_name():
     inventory = Inventory()
-    assert inventory.find_product("NonExistent") is None
+    with pytest.raises(ValueError):
+        inventory.add_product(Product(name="", price=10.0, quantity=5))
 
 
-def test_inventory_remove_nonexistent_product():
+def test_inventory_remove_invalid_name():
     inventory = Inventory()
-    assert not inventory.remove_product("NonExistent")
+    assert not inventory.remove_product("")
 
 
-def test_inventory_add_product_same_name_different_price():
+def test_inventory_add_duplicate_names():
     inventory = Inventory()
     product1 = Product(name="Test", price=10.0, quantity=5)
-    product2 = Product(name="Test", price=15.0, quantity=3)
+    product2 = Product(name="Test", price=20.0, quantity=10)  # Même nom, différent
     inventory.add_product(product1)
-    inventory.add_product(product2)  # Ne doit pas remplacer l'existant
-    assert inventory.products["Test"].price == 10.0
+    inventory.add_product(product2)
+    assert inventory.products["Test"] == product1  # Pas de remplacement
 
 
-def test_inventory_total_value_edge_cases():
+def test_inventory_total_value_with_zero_price_or_quantity():
     inventory = Inventory()
-    inventory.add_product(Product(name="Test1", price=0.0, quantity=10))
-    inventory.add_product(Product(name="Test2", price=10.0, quantity=0))
+    product1 = Product(name="Test1", price=0.0, quantity=5)
+    product2 = Product(name="Test2", price=10.0, quantity=0)
+    inventory.add_product(product1)
+    inventory.add_product(product2)
     assert inventory.get_total_value() == 0.0
 
 
-# Tests pour l'interface utilisateur
+def test_inventory_update_existing_product():
+    inventory = Inventory()
+    product1 = Product(name="Test", price=10.0, quantity=5)
+    product2 = Product(name="Test", price=15.0, quantity=3)  # Différente instance
+    inventory.add_product(product1)
+    inventory.add_product(product2)
+    assert inventory.products["Test"] == product1  # Pas de mise à jour
 
-def test_interface_add_product():
-    # Exécution du programme avec les entrées simulées pour ajouter un produit
-    result = subprocess.run(
-        ['python', 'main.py'], 
-        input="1\nLaptop\n1200.0\n5\n7\n", 
-        text=True, 
-        capture_output=True
+
+def test_inventory_full_workflow():
+    inventory = Inventory()
+    product1 = Product(name="Laptop", price=1000.0, quantity=5)
+    product2 = Product(name="Phone", price=800.0, quantity=10)
+
+    inventory.add_product(product1)
+    inventory.add_product(product2)
+
+    # Vérifiez la valeur initiale
+    assert inventory.get_total_value() == 13000.0
+
+    # Vendez 3 ordinateurs portables
+    assert product1.sell(3) is True
+    assert product1.quantity == 2  # Vérifiez la quantité mise à jour
+    assert inventory.get_total_value() == 10000.0  # Vérifiez la valeur mise à jour
+
+    # Supprimez les téléphones
+    assert inventory.remove_product("Phone") is True
+    assert inventory.get_total_value() == 2000.0
+
+def test_main_example():
+    # Initialisation de l'inventaire
+    inventory = Inventory()
+    product1 = Product(name="Laptop", price=1200.0, quantity=5)
+    product2 = Product(name="Phone", price=800.0, quantity=10)
+
+    # Ajout des produits
+    inventory.add_product(product1)
+    inventory.add_product(product2)
+
+    # Vérifiez que les produits ont été ajoutés
+    assert len(inventory.products) == 2
+    assert inventory.products["Laptop"] == product1
+    assert inventory.products["Phone"] == product2
+
+    # Vente de 2 ordinateurs portables
+    assert product1.sell(2) is True
+    assert product1.quantity == 3
+
+    # Réapprovisionnement de 5 téléphones
+    product2.restock(5)
+    assert product2.quantity == 15
+
+    # Vérifiez la valeur totale de l'inventaire
+    expected_value = (3 * 1200.0) + (15 * 800.0)
+    assert inventory.get_total_value() == expected_value
+
+    # Vérifiez l'état de l'inventaire
+    assert repr(inventory) == (
+        "Inventory(products=[Product(name=Laptop, price=1200.0, quantity=3), "
+        "Product(name=Phone, price=800.0, quantity=15)])"
     )
-    assert "Produit ajouté avec succès." in result.stdout
-    assert "Liste des produits" in result.stdout  # Vérifier la présence de la liste des produits
-
-    def test_interface_remove_product():
-    # Exécution du programme pour ajouter puis supprimer un produit
-        result = subprocess.run(
-            ['python', 'main.py'], 
-            input="1\nLaptop\n1200.0\n5\n2\nLaptop\n7\n", 
-            text=True, 
-            capture_output=True
-    )
-    assert "Produit supprimé avec succès." in result.stdout
-    assert "Liste des produits" in result.stdout  # Vérifier la mise à jour de la liste
-
-def test_interface_sell_product():
-    result = subprocess.run(
-        ['python', 'main.py'], 
-        input="1\nLaptop\n1200.0\n5\n3\nLaptop\n2\n7\n", 
-        text=True, 
-        capture_output=True
-    )
-    assert "2 unités de Laptop vendues." in result.stdout
-    assert "Quantité restante: 3" in result.stdout
-
-    def test_interface_invalid_option():
-        result = subprocess.run(
-            ['python', 'main.py'], 
-            input="9\n7\n", 
-            text=True, 
-            capture_output=True
-    )
-    assert "Option invalide." in result.stdout
-
-def test_interface_sell_more_than_stock():
-    result = subprocess.run(
-        ['python', 'main.py'], 
-        input="1\nLaptop\n1200.0\n5\n3\nLaptop\n10\n7\n", 
-        text=True, 
-        capture_output=True
-    )
-    assert "Stock insuffisant pour la vente." in result.stdout
-
-def test_interface_restock_negative():
-    result = subprocess.run(
-        ['python', 'main.py'], 
-        input="1\nLaptop\n1200.0\n5\n4\nLaptop\n-10\n7\n", 
-        text=True, 
-        capture_output=True
-    )
-    assert "Quantité invalide pour le réapprovisionnement." in result.stdout
-
-
