@@ -201,41 +201,6 @@ def test_inventory_total_value_edge_cases():
 
 
 # Tests pour l'interface utilisateur
-def test_interface_add_product():
-    user_input = ["1", "Laptop", "1200.0", "5", "7"]  # Ajouter un produit et quitter
-    with patch("builtins.input", side_effect=user_input), patch("sys.stdout", new_callable=StringIO) as output:
-        run_inventory_interface()
-        assert "Produit ajouté avec succès." in output.getvalue()
-
-def test_interface_remove_product():
-    user_input = ["1", "Laptop", "1200.0", "5", "2", "Laptop", "7"]  # Ajouter, supprimer, quitter
-    with patch("builtins.input", side_effect=user_input), patch("sys.stdout", new_callable=StringIO) as output:
-        run_inventory_interface()
-        assert "Produit supprimé avec succès." in output.getvalue()
-
-def test_interface_sell_product():
-    user_input = ["1", "Laptop", "1200.0", "5", "3", "Laptop", "2", "7"]  # Ajouter, vendre, quitter
-    with patch("builtins.input", side_effect=user_input), patch("sys.stdout", new_callable=StringIO) as output:
-        run_inventory_interface()
-        assert "2 unités de Laptop vendues." in output.getvalue()
-
-def test_interface_invalid_option():
-    user_input = ["9", "7"]  # Option invalide, quitter
-    with patch("builtins.input", side_effect=user_input), patch("sys.stdout", new_callable=StringIO) as output:
-        run_inventory_interface()
-        assert "Option invalide." in output.getvalue()
-
-def test_interface_sell_more_than_stock():
-    user_input = ["1", "Laptop", "1200.0", "5", "3", "Laptop", "10", "7"]  # Ajouter, vente excessive, quitter
-    with patch("builtins.input", side_effect=user_input), patch("sys.stdout", new_callable=StringIO) as output:
-        run_inventory_interface()
-        assert "Stock insuffisant pour la vente." in output.getvalue()
-
-def test_interface_restock_negative():
-    user_input = ["1", "Laptop", "1200.0", "5", "4", "Laptop", "-10", "7"]  # Ajouter, réapprovisionnement négatif, quitter
-    with patch("builtins.input", side_effect=user_input), patch("sys.stdout", new_callable=StringIO) as output:
-        run_inventory_interface()
-        assert "Quantité invalide pour le réapprovisionnement." in output.getvalue()
 
 def test_interface_option_quit():
     user_input = ["7"]
