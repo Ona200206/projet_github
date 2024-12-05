@@ -66,6 +66,31 @@ def test_product_repr():
     product = Product(name="Test", price=10.0, quantity=5)
     assert repr(product) == "Product(name=Test, price=10.0, quantity=5)"
 
+def test_product_invalid_name_empty():
+    with pytest.raises(ValueError, match="Le nom du produit ne peut pas être vide."):
+        Product(name="", price=10.0, quantity=5)
+
+
+def test_product_invalid_name_whitespace():
+    with pytest.raises(ValueError, match="Le nom du produit ne peut pas être vide."):
+        Product(name="   ", price=10.0, quantity=5)
+
+
+def test_product_zero_price():
+    product = Product(name="Test", price=0.0, quantity=5)
+    assert product.value() == 0.0
+
+
+def test_product_zero_quantity_sell():
+    product = Product(name="Test", price=10.0, quantity=0)
+    assert not product.sell(1)  # Impossible de vendre avec un stock nul
+
+
+def test_product_negative_restock():
+    product = Product(name="Test", price=10.0, quantity=5)
+    product.restock(-5)  # Doit ignorer les réapprovisionnements négatifs
+    assert product.quantity == 5
+
 
 # Tests pour la classe Inventory
 def test_inventory_creation():
@@ -149,6 +174,31 @@ def test_inventory_repr_empty():
     inventory = Inventory()
     assert repr(inventory) == "Inventory(products=[])"
 
+def test_inventory_empty_find_product():
+    inventory = Inventory()
+    assert inventory.find_product("NonExistent") is None
+
+
+def test_inventory_remove_nonexistent_product():
+    inventory = Inventory()
+    assert not inventory.remove_product("NonExistent")
+
+
+def test_inventory_add_product_same_name_different_price():
+    inventory = Inventory()
+    product1 = Product(name="Test", price=10.0, quantity=5)
+    product2 = Product(name="Test", price=15.0, quantity=3)
+    inventory.add_product(product1)
+    inventory.add_product(product2)  # Ne doit pas remplacer l'existant
+    assert inventory.products["Test"].price == 10.0
+
+
+def test_inventory_total_value_edge_cases():
+    inventory = Inventory()
+    inventory.add_product(Product(name="Test1", price=0.0, quantity=10))
+    inventory.add_product(Product(name="Test2", price=10.0, quantity=0))
+    assert inventory.get_total_value() == 0.0
+
 
 # Tests pour l'interface utilisateur
 def test_interface_add_product():
@@ -185,3 +235,31 @@ def test_interface_invalid_option():
             run_inventory_interface()
             result = output.getvalue()
     assert "Choix invalide" in result
+
+
+def test_interface_sell_more_than_stock():
+    user_input = ["1", "Test", "10.0", "5", "3", "Test", "10", "7"]  # Essayer de vendre plus que le stock
+    with patch("builtins.input", side_effect=user_input):
+        with patch("sys.stdout", new_callable=StringIO) as output:
+            run_inventory_interface()
+            result = output.getvalue()
+    assert "Stock insuffisant pour la vente." in result
+
+
+def test_interface_restock_negative():
+    user_input = ["1", "Test", "10.0", "5", "4", "Test", "-5", "7"]  # Réapprovisionnement négatif
+    with patch("builtins.input", side_effect=user_input):
+        with patch("sys.stdout", new_callable=StringIO) as output:
+            run_inventory_interface()
+            result = output.getvalue()
+    assert "Quantité invalide pour le réapprovisionnement." in result
+
+
+def test_interface_option_quit():
+    user_input = ["7"]  # Option pour quitter directement
+    with patch("builtins.input", side_effect=user_input):
+        with patch("sys.stdout", new_callable=StringIO) as output:
+            run_inventory_interface()
+            result = output.getvalue()
+    assert "Quitter le programme." in result
+
