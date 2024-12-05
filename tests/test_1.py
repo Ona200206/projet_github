@@ -1,6 +1,6 @@
 import pytest
 from io import StringIO
-from unittest.mock import patch
+import subprocess
 from projet_github.main import Product, Inventory, run_inventory_interface
 
 
@@ -202,9 +202,63 @@ def test_inventory_total_value_edge_cases():
 
 # Tests pour l'interface utilisateur
 
-def test_interface_option_quit():
-    user_input = ["7"]
-    with patch("builtins.input", side_effect=user_input), patch("sys.stdout", new_callable=StringIO) as output:
-        run_inventory_interface()
-        assert "Quitter le programme." in output.getvalue()
-        assert "Au revoir!" in output.getvalue()
+def test_interface_add_product():
+    # Exécution du programme avec les entrées simulées pour ajouter un produit
+    result = subprocess.run(
+        ['python', 'main.py'], 
+        input="1\nLaptop\n1200.0\n5\n7\n", 
+        text=True, 
+        capture_output=True
+    )
+    assert "Produit ajouté avec succès." in result.stdout
+    assert "Liste des produits" in result.stdout  # Vérifier la présence de la liste des produits
+
+    def test_interface_remove_product():
+    # Exécution du programme pour ajouter puis supprimer un produit
+    result = subprocess.run(
+        ['python', 'main.py'], 
+        input="1\nLaptop\n1200.0\n5\n2\nLaptop\n7\n", 
+        text=True, 
+        capture_output=True
+    )
+    assert "Produit supprimé avec succès." in result.stdout
+    assert "Liste des produits" in result.stdout  # Vérifier la mise à jour de la liste
+
+def test_interface_sell_product():
+    result = subprocess.run(
+        ['python', 'main.py'], 
+        input="1\nLaptop\n1200.0\n5\n3\nLaptop\n2\n7\n", 
+        text=True, 
+        capture_output=True
+    )
+    assert "2 unités de Laptop vendues." in result.stdout
+    assert "Quantité restante: 3" in result.stdout
+
+    def test_interface_invalid_option():
+    result = subprocess.run(
+        ['python', 'main.py'], 
+        input="9\n7\n", 
+        text=True, 
+        capture_output=True
+    )
+    assert "Option invalide." in result.stdout
+
+def test_interface_sell_more_than_stock():
+    result = subprocess.run(
+        ['python', 'main.py'], 
+        input="1\nLaptop\n1200.0\n5\n3\nLaptop\n10\n7\n", 
+        text=True, 
+        capture_output=True
+    )
+    assert "Stock insuffisant pour la vente." in result.stdout
+
+def test_interface_restock_negative():
+    result = subprocess.run(
+        ['python', 'main.py'], 
+        input="1\nLaptop\n1200.0\n5\n4\nLaptop\n-10\n7\n", 
+        text=True, 
+        capture_output=True
+    )
+    assert "Quantité invalide pour le réapprovisionnement." in result.stdout
+
+
