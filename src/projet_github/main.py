@@ -1,6 +1,5 @@
 from typing import Dict
 
-
 class Product:
     """Représente un produit dans l'inventaire."""
 
@@ -63,3 +62,71 @@ class Inventory:
 
     def __repr__(self) -> str:
         return f"Inventory(products={list(self.products.values())})"
+
+
+def run_inventory_interface():
+    """Interface utilisateur textuelle pour gérer l'inventaire."""
+    inventory = Inventory()
+
+    while True:
+        print("\n--- Gestion de l'inventaire ---")
+        print("1. Ajouter un produit")
+        print("2. Supprimer un produit")
+        print("3. Vendre un produit")
+        print("4. Réapprovisionner un produit")
+        print("5. Afficher la valeur totale de l'inventaire")
+        print("6. Afficher les produits")
+        print("7. Quitter")
+
+        try:
+            choice = int(input("Choisissez une option: "))
+        except ValueError:
+            print("Choix invalide. Veuillez entrer un nombre.")
+            continue
+
+        if choice == 1:
+            name = input("Nom du produit: ").strip()
+            try:
+                price = float(input("Prix du produit: "))
+                quantity = int(input("Quantité: "))
+                inventory.add_product(Product(name, price, quantity))
+                print(f"Produit {name} ajouté.")
+            except ValueError as e:
+                print(f"Erreur: {e}")
+        elif choice == 2:
+            name = input("Nom du produit à supprimer: ").strip()
+            if inventory.remove_product(name):
+                print(f"Produit {name} supprimé.")
+            else:
+                print(f"Produit {name} introuvable.")
+        elif choice == 3:
+            name = input("Nom du produit à vendre: ").strip()
+            amount = int(input("Quantité à vendre: "))
+            product = inventory.find_product(name)
+            if product and product.sell(amount):
+                print(f"{amount} unités de {name} vendues.")
+            else:
+                print("Vente échouée. Vérifiez le stock ou le produit.")
+        elif choice == 4:
+            name = input("Nom du produit à réapprovisionner: ").strip()
+            amount = int(input("Quantité à ajouter: "))
+            product = inventory.find_product(name)
+            if product:
+                product.restock(amount)
+                print(f"{amount} unités ajoutées au produit {name}.")
+            else:
+                print("Produit introuvable.")
+        elif choice == 5:
+            print(f"Valeur totale de l'inventaire: {inventory.get_total_value():.2f}")
+        elif choice == 6:
+            print("Produits dans l'inventaire:")
+            print(inventory)
+        elif choice == 7:
+            print("Au revoir!")
+            break
+        else:
+            print("Choix invalide. Veuillez réessayer.")
+
+
+if __name__ == "__main__":
+    run_inventory_interface()
