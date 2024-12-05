@@ -202,54 +202,41 @@ def test_inventory_total_value_edge_cases():
 
 # Tests pour l'interface utilisateur
 def test_interface_add_product():
-    user_input = ["1", "Test", "10.0", "5", "7"]  # Ajouter un produit puis quitter
-    with patch("builtins.input", side_effect=user_input):
-        with patch("sys.stdout", new_callable=StringIO) as output:
-            run_inventory_interface()
-            result = output.getvalue()
-    assert "Produit Test ajouté." in result
-
+    user_input = ["1", "Laptop", "1200.0", "5", "7"]  # "7" pour quitter après l'ajout
+    with patch("builtins.input", side_effect=user_input), patch("sys.stdout", new_callable=StringIO) as output:
+        run_inventory_interface()
+        assert "Produit ajouté avec succès." in output.getvalue()
 
 def test_interface_remove_product():
-    user_input = ["1", "Test", "10.0", "5", "2", "Test", "7"]  # Ajouter, supprimer, quitter
-    with patch("builtins.input", side_effect=user_input):
-        with patch("sys.stdout", new_callable=StringIO) as output:
-            run_inventory_interface()
-            result = output.getvalue()
-    assert "Produit Test supprimé." in result
-
+    user_input = ["1", "Laptop", "1200.0", "5", "2", "Laptop", "7"]  # Ajout puis suppression
+    with patch("builtins.input", side_effect=user_input), patch("sys.stdout", new_callable=StringIO) as output:
+        run_inventory_interface()
+        assert "Produit supprimé avec succès." in output.getvalue()
 
 def test_interface_sell_product():
-    user_input = ["1", "Test", "10.0", "5", "3", "Test", "3", "7"]  # Ajouter, vendre, quitter
-    with patch("builtins.input", side_effect=user_input):
-        with patch("sys.stdout", new_callable=StringIO) as output:
-            run_inventory_interface()
-            result = output.getvalue()
-    assert "3 unités de Test vendues." in result
+    user_input = ["1", "Laptop", "1200.0", "5", "3", "Laptop", "2", "7"]  # Ajout, vente, quitter
+    with patch("builtins.input", side_effect=user_input), patch("sys.stdout", new_callable=StringIO) as output:
+        run_inventory_interface()
+        assert "2 unités de Laptop vendues." in output.getvalue()
 
 
 def test_interface_invalid_option():
-    user_input = ["9", "7"]  # Option invalide puis quitter
-    with patch("builtins.input", side_effect=user_input):
-        with patch("sys.stdout", new_callable=StringIO) as output:
-            run_inventory_interface()
-            result = output.getvalue()
-    assert "Choix invalide" in result
-
+    user_input = ["9", "7"]  # Option invalide, puis quitter
+    with patch("builtins.input", side_effect=user_input), patch("sys.stdout", new_callable=StringIO) as output:
+        run_inventory_interface()
+        assert "Option invalide." in output.getvalue()
 
 def test_interface_sell_more_than_stock():
-    user_input = ["1", "Laptop", "1200.0", "5", "3", "Laptop", "10", "7"]
+    user_input = ["1", "Laptop", "1200.0", "5", "3", "Laptop", "10", "7"]  # Ajout, vente excessive, quitter
     with patch("builtins.input", side_effect=user_input), patch("sys.stdout", new_callable=StringIO) as output:
         run_inventory_interface()
         assert "Stock insuffisant pour la vente." in output.getvalue()
 
-
 def test_interface_restock_negative():
-    user_input = ["1", "Laptop", "1200.0", "5", "4", "Laptop", "-10", "7"]
+    user_input = ["1", "Laptop", "1200.0", "5", "4", "Laptop", "-10", "7"]  # Ajout, réapprovisionnement négatif, quitter
     with patch("builtins.input", side_effect=user_input), patch("sys.stdout", new_callable=StringIO) as output:
         run_inventory_interface()
         assert "Quantité invalide pour le réapprovisionnement." in output.getvalue()
-
 
 def test_interface_option_quit():
     user_input = ["7"]
