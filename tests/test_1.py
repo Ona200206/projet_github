@@ -1,6 +1,5 @@
-
+import pytest
 from projet_github.main import Product, Inventory
-
 
 # Tests pour la classe Product
 def test_product_creation():
@@ -59,6 +58,24 @@ def test_product_restock_failure():
 def test_product_repr():
     product = Product(name="Test", price=10.0, quantity=5)
     assert repr(product) == "Product(name=Test, price=10.0, quantity=5)"
+
+
+def test_product_invalid_creation():
+    with pytest.raises(ValueError):
+        Product(name="Test", price=-10.0, quantity=5)
+    with pytest.raises(ValueError):
+        Product(name="Test", price=10.0, quantity=-5)
+
+
+def test_product_float_price():
+    product = Product(name="Test", price=10.99, quantity=3)
+    assert product.value() == 32.97
+
+
+def test_product_sell_edge_case():
+    product = Product(name="Test", price=10.0, quantity=5)
+    assert not product.sell(0)  # Vendre 0
+    assert not product.sell(6)  # Plus que le stock
 
 
 # Tests pour la classe Inventory
@@ -149,3 +166,57 @@ def test_inventory_repr():
 def test_inventory_repr_empty():
     inventory = Inventory()
     assert repr(inventory) == "Inventory(products=[])"
+
+
+def test_inventory_add_product_invalid_name():
+    inventory = Inventory()
+    with pytest.raises(ValueError):
+        inventory.add_product(Product(name="", price=10.0, quantity=5))
+
+
+def test_inventory_remove_invalid_name():
+    inventory = Inventory()
+    assert not inventory.remove_product("")
+
+
+def test_inventory_add_duplicate_names():
+    inventory = Inventory()
+    product1 = Product(name="Test", price=10.0, quantity=5)
+    product2 = Product(name="Test", price=20.0, quantity=10)  # Même nom, différent
+    inventory.add_product(product1)
+    inventory.add_product(product2)
+    assert inventory.products["Test"] == product1  # Pas de remplacement
+
+
+def test_inventory_total_value_with_zero_price_or_quantity():
+    inventory = Inventory()
+    product1 = Product(name="Test1", price=0.0, quantity=5)
+    product2 = Product(name="Test2", price=10.0, quantity=0)
+    inventory.add_product(product1)
+    inventory.add_product(product2)
+    assert inventory.get_total_value() == 0.0
+
+
+def test_inventory_update_existing_product():
+    inventory = Inventory()
+    product1 = Product(name="Test", price=10.0, quantity=5)
+    product2 = Product(name="Test", price=15.0, quantity=3)  # Différente instance
+    inventory.add_product(product1)
+    inventory.add_product(product2)
+    assert inventory.products["Test"] == product1  # Pas de mise à jour
+
+
+def test_inventory_full_workflow():
+    inventory = Inventory()
+    product1 = Product(name="Laptop", price=1000.0, quantity=5)
+    product2 = Product(name="Phone", price=800.0, quantity=10)
+
+    inventory.add_product(product1)
+    inventory.add_product(product2)
+    assert inventory.get_total_value() == 13000.0
+
+    product1.sell(3)
+    assert inventory.get_total_value() == 11600.0
+
+    inventory.remove_product("Phone")
+    assert inventory.get_total_value() == 2000.0
