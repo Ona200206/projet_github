@@ -1,75 +1,61 @@
-from typing import Dict
+from projet_github.main import Product, Inventory
 
 
-class Product:
-    """Représente un produit dans l'inventaire."""
-
-    def __init__(self, name: str, price: float, quantity: int) -> None:
-        self.name = name
-        self.price = price
-        self.quantity = quantity
-
-    def restock(self, amount: int) -> None:
-        """Ajoute une quantité au stock du produit."""
-        if amount > 0:
-            self.quantity += amount
-
-    def sell(self, amount: int) -> bool:
-        """Vend une quantité du produit, retourne True si réussi."""
-        if 0 < amount <= self.quantity:
-            self.quantity -= amount
-            return True
-        return False
-
-    def value(self) -> float:
-        """Retourne la valeur totale du stock pour ce produit."""
-        return self.price * self.quantity
-
-    def __repr__(self) -> str:
-        return f"Product(name={self.name}, price={self.price}, quantity={self.quantity})"
+def test_product_creation():
+    product = Product(name="Test", price=10.0, quantity=5)
+    assert product.name == "Test"
+    assert product.price == 10.0
+    assert product.quantity == 5
 
 
-class Inventory:
-    """Gère un inventaire de produits."""
-
-    def __init__(self) -> None:
-        self.products: Dict[str, Product] = {}
-
-    def add_product(self, product: Product) -> None:
-        """Ajoute un nouveau produit à l'inventaire."""
-        if product.name not in self.products:
-            self.products[product.name] = product
-
-    def remove_product(self, product_name: str) -> bool:
-        """Supprime un produit de l'inventaire."""
-        if product_name in self.products:
-            del self.products[product_name]
-            return True
-        return False
-
-    def get_total_value(self) -> float:
-        """Calcule la valeur totale de l'inventaire."""
-        return sum(product.value() for product in self.products.values())
-
-    def find_product(self, product_name: str) -> Product | None:
-        """Recherche un produit par son nom."""
-        return self.products.get(product_name)
-
-    def __repr__(self) -> str:
-        return f"Inventory(products={list(self.products.values())})"
+def test_product_value():
+    product = Product(name="Test", price=10.0, quantity=5)
+    assert product.value() == 50.0
 
 
-# Exemple d'utilisation (sans interaction utilisateur)
-if __name__ == "__main__":
+def test_product_sell():
+    product = Product(name="Test", price=10.0, quantity=5)
+    assert product.sell(3) is True
+    assert product.quantity == 2
+    assert not product.sell(3)  # Plus lisible
+
+
+def test_product_restock():
+    product = Product(name="Test", price=10.0, quantity=5)
+    product.restock(5)
+    assert product.quantity == 10
+
+
+def test_inventory_add_remove():
     inventory = Inventory()
-    product1 = Product(name="Laptop", price=1200.0, quantity=5)
-    product2 = Product(name="Phone", price=800.0, quantity=10)
+    product = Product(name="Test", price=10.0, quantity=5)
+
+    inventory.add_product(product)
+    assert len(inventory.products) == 1
+
+    inventory.remove_product("Test")
+    assert len(inventory.products) == 0
+
+
+def test_inventory_value():
+    inventory = Inventory()
+    product1 = Product(name="Laptop", price=1000.0, quantity=3)
+    product2 = Product(name="Phone", price=500.0, quantity=5)
 
     inventory.add_product(product1)
     inventory.add_product(product2)
 
-    product1.sell(2)
-    product2.restock(5)
+    assert inventory.get_total_value() == 5500.0
 
-    print(f"Valeur totale de l'inventaire: {inventory.get_total_value():.2f}")
-    print(inventory)
+
+def test_find_product():
+    inventory = Inventory()
+    product = Product(name="Test", price=10.0, quantity=5)
+
+    inventory.add_product(product)
+    found_product = inventory.find_product("Test")
+
+    assert found_product is not None
+    assert found_product.name == "Test"
+    assert found_product.price == 10.0
+    assert found_product.quantity == 5
