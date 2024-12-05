@@ -20,8 +20,9 @@ def test_product_value_zero_quantity():
 
 
 def test_product_value_negative_price():
-    product = Product(name="Test", price=-10.0, quantity=5)
-    assert product.value() == -50.0
+    with pytest.raises(ValueError):
+        Product(name="Test", price=-10.0, quantity=5)
+
 
 
 def test_product_sell_success():
@@ -214,14 +215,15 @@ def test_inventory_full_workflow():
     inventory.add_product(product1)
     inventory.add_product(product2)
 
-    # Vérifier la valeur initiale
+    # Vérifiez la valeur initiale
     assert inventory.get_total_value() == 13000.0
 
-    # Vendre 3 ordinateurs portables
+    # Vendez 3 ordinateurs portables
     assert product1.sell(3) is True
-    assert product1.quantity == 2
-    assert inventory.get_total_value() == 11600.0
+    assert product1.quantity == 2  # Vérifiez la quantité mise à jour
+    assert inventory.get_total_value() == 11600.0  # Vérifiez la valeur mise à jour
 
-    # Supprimer les téléphones
+    # Supprimez les téléphones
     assert inventory.remove_product("Phone") is True
     assert inventory.get_total_value() == 2000.0
+
