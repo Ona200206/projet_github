@@ -5,10 +5,16 @@ class Product:
     """Représente un produit dans l'inventaire."""
 
     def __init__(self, name: str, price: float, quantity: int) -> None:
+        if price < 0:
+            raise ValueError("Le prix ne peut pas être négatif.")
+        if quantity < 0:
+            raise ValueError("La quantité ne peut pas être négative.")
+        if not name.strip():
+            raise ValueError("Le nom du produit ne peut pas être vide.")
         self.name = name
         self.price = price
         self.quantity = quantity
-
+        
     def restock(self, amount: int) -> None:
         """Ajoute une quantité au stock du produit."""
         if amount > 0:

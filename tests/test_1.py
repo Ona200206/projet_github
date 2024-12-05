@@ -213,10 +213,15 @@ def test_inventory_full_workflow():
 
     inventory.add_product(product1)
     inventory.add_product(product2)
+
+    # Vérifier la valeur initiale
     assert inventory.get_total_value() == 13000.0
 
-    product1.sell(3)
+    # Vendre 3 ordinateurs portables
+    assert product1.sell(3) is True
+    assert product1.quantity == 2
     assert inventory.get_total_value() == 11600.0
 
-    inventory.remove_product("Phone")
+    # Supprimer les téléphones
+    assert inventory.remove_product("Phone") is True
     assert inventory.get_total_value() == 2000.0
