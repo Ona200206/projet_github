@@ -1,0 +1,4 @@
+[report]
+exclude_lines =
+    # pragma: no cover start
+    # pragma: no cover end
