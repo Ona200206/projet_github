@@ -1,6 +1,7 @@
 import pytest
 from projet_github.main import Product, Inventory
 
+
 # Tests pour la classe Product
 def test_product_creation():
     product = Product(name="Test", price=10.0, quantity=5)
@@ -22,7 +23,6 @@ def test_product_value_zero_quantity():
 def test_product_value_negative_price():
     with pytest.raises(ValueError):
         Product(name="Test", price=-10.0, quantity=5)
-
 
 
 def test_product_sell_success():
@@ -161,7 +161,10 @@ def test_inventory_repr():
     inventory = Inventory()
     product = Product(name="Test", price=10.0, quantity=5)
     inventory.add_product(product)
-    assert repr(inventory) == "Inventory(products=[Product(name=Test, price=10.0, quantity=5)])"
+    assert (
+        repr(inventory)
+        == "Inventory(products=[Product(name=Test, price=10.0, quantity=5)])"
+    )
 
 
 def test_inventory_repr_empty():
@@ -226,6 +229,7 @@ def test_inventory_full_workflow():
     # Supprimez les téléphones
     assert inventory.remove_product("Phone") is True
     assert inventory.get_total_value() == 2000.0
+
 
 def test_main_example():
     # Initialisation de l'inventaire
