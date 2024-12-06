@@ -69,18 +69,18 @@ class Inventory:
     # Exemple d'utilisation (sans interaction utilisateur)
 
 
-if __name__ == "__main__":  # pragma : no cover
-    inventory = Inventory()  # pragma : no cover
-    product1 = Product(name="Laptop", price=1200.0, quantity=5)  # pragma : no cover
-    product2 = Product(name="Phone", price=800.0, quantity=10)  # pragma : no cover
+# pragma : no cover start
+if __name__ == "__main__":
+    inventory = Inventory()
+    product1 = Product(name="Laptop", price=1200.0, quantity=5)
+    product2 = Product(name="Phone", price=800.0, quantity=10)
 
-    inventory.add_product(product1)  # pragma : no cover
-    inventory.add_product(product2)  # pragma : no cover
+    inventory.add_product(product1)
+    inventory.add_product(product2)
 
-    product1.sell(2)  # pragma : no cover
-    product2.restock(5)  # pragma : no cover
+    product1.sell(2)
+    product2.restock(5)
 
-    print(
-        f"Valeur totale de l'inventaire: {inventory.get_total_value():.2f}"
-    )  # pragma : no cover
-    print(inventory)  # pragma : no cover
+    print(f"Valeur totale de l'inventaire: {inventory.get_total_value():.2f}")
+    print(inventory)
+# pragma : no cover start
