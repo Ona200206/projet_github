@@ -65,5 +65,3 @@ class Inventory:
 
     def __repr__(self) -> str:
         return f"Inventory(products={list(self.products.values())})"
-
-    
