@@ -3,7 +3,7 @@ requires-python = ">=3.11"
 name = "projet_github"
 description = "github manierski troadec"
 authors = [
-    { name = 'Arnaud Somville', email = 'arnaud.somville@estaca.eu' },
+    { name = 'Ilona TROADEC Allan MANIERSKI', email = 'ilona.troadec@estaca.eu allan.manierski@estaca.eu' },
 ]
 version = "0.1.0"
 dependencies = [
